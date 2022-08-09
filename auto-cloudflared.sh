@@ -58,12 +58,14 @@ cloudflared tunnel run --url localhost:$port $tunnel_name &
 python3 -m http.server $port &
 wait
 
+# DEBUG: For someone reason doesn't reach code below to look at later
 # Would you like to delete the created entries?
-echo -n "Would you like to delete the newly created tunnel? (y/n)"
-read delete_decision
-if [[ $delete_decision == "y" ]]; then
-    cloudflared tunnel delete $tunnel_name
-else
-    "Bye! o/"
-    exit 1
-fi
+
+# echo -n "Would you like to delete the newly created tunnel? (y/n)"
+# read delete_decision
+# if [[ $delete_decision == "y" ]]; then
+#     cloudflared tunnel delete $tunnel_name
+# else
+#     "Bye! o/"
+#     exit 1
+# fi
