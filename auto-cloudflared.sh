@@ -9,8 +9,7 @@ if ! command -v cloudflared &> /dev/null
         echo "cloudflared could not be found"
         echo -n "Would you like to install cloudflared?  (y/n) "
         read install_binary_decision
-        if [[ $install_binary_decision == "y" ]];
-        then
+        if [[ $install_binary_decision == "y" ]]; then
             echo "Grabbing latest cloudflared binary from GitHub.."; 
             wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb" && echo "Installing binary :)" && sudo dpkg -i "cloudflared-linux-amd64.deb"
             echo "Cleaning up downloaded binary..." && rm cloudflared-linux-amd64.deb
@@ -45,8 +44,7 @@ if cloudflared tunnel list | grep -q $tunnel_name ; then
         cloudflared tunnel create $tunnel_name
 fi
 
-# create configuration file (this step might be optional might need more research)
-# needs $name and $hostname
+# Create DNS record but I can't find a way to do validation for this. I tried using dig to query CNAME of the FDQN but doesn't look like it appears. Something that also really annoys me is I cannot delete DNS CNAME records using cloudflared as well.
 
 echo -n "Please specify the full FDQN you would like to make your create your tunnel on? "
 read fqdn
@@ -61,3 +59,11 @@ python3 -m http.server $port &
 wait
 
 # Would you like to delete the created entries?
+echo -n "Would you like to delete the newly created tunnel? (y/n)"
+read delete_decision
+if [[ $delete_decision == "y" ]]; then
+    cloudflared tunnel delete $tunnel_name
+else
+    "Bye! o/"
+    exit 1
+fi
