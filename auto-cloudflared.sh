@@ -7,12 +7,12 @@
 if ! command -v cloudflared &> /dev/null
     then
         echo "cloudflared could not be found"
-        echo -n "Would you like to install cloudflared?  (y/n) "
+        echo -n "[?] Would you like to install cloudflared?  (y/n) "
         read install_binary_decision
         if [[ $install_binary_decision == "y" ]]; then
-            echo "Grabbing latest cloudflared binary from GitHub.."; 
+            echo "[+] Grabbing latest cloudflared binary from GitHub.."; 
             wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb" && echo "Installing binary :)" && sudo dpkg -i "cloudflared-linux-amd64.deb"
-            echo "Cleaning up downloaded binary..." && rm cloudflared-linux-amd64.deb
+            echo "[+] Cleaning up downloaded binary..." && rm cloudflared-linux-amd64.deb
 
         else
             echo "¯\_(ツ)_/¯ no leet hax for you ¯\_(ツ)_/¯"
@@ -28,7 +28,7 @@ FILE="$HOME/.cloudflared/cert.pem"
 if [ -f "$FILE" ]; then
     echo "$FILE exists so you have already logged into CloudFlare:)"
 else 
-    echo "Please login with your CloudFlare credentials and choose the domain you would like to make a tunnel with!"
+    echo "[!] Please login with your CloudFlare credentials and choose the domain you would like to make a tunnel with!"
     cloudflared tunnel login
 fi
 
@@ -36,25 +36,26 @@ fi
 # probably a good idea to have a $name variable
 
 
-echo -n "What would you like your tunnel name to be? "
+echo -n "[?] What would you like your tunnel name to be? "
 read tunnel_name
 if cloudflared tunnel list | grep -q $tunnel_name ; then
-        echo "Tunnel already created :)"
+        echo "[+] Tunnel already created :)"
     else
         cloudflared tunnel create $tunnel_name
 fi
 
 # Create DNS record but I can't find a way to do validation for this. I tried using dig to query CNAME of the FDQN but doesn't look like it appears. Something that also really annoys me is I cannot delete DNS CNAME records using cloudflared as well.
 
-echo -n "Please specify the full FDQN you would like to make your create your tunnel on? "
+echo -n "[?] Please specify the full FDQN you would like to make your create your tunnel on? "
 read fqdn
 cloudflared tunnel route dns $tunnel_name $fqdn
 
 # Run tunnel and get them to verify web server is working
 
-echo -n "What port would you like to run the web server on? "
+echo -n "[?] What port would you like to run the web server on? "
 read port
 cloudflared tunnel run --url localhost:$port $tunnel_name &
+echo "[+] In a new terminal window/tab, run the following command: python3 -m http.server $port" &
 # Uncomment the line below if you want to automatically start web server
 # python3 -m http.server $port &
 wait
