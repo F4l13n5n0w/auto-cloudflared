@@ -55,7 +55,8 @@ cloudflared tunnel route dns $tunnel_name $fqdn
 echo -n "[?] What port would you like to run the web server on? "
 read port
 cloudflared tunnel run --url localhost:$port $tunnel_name &
-echo "[+] In a new terminal window/tab, run the following command: python3 -m http.server $port" &
+echo "[!] In a new terminal window/tab, run the following command: python3 -m http.server $port" &
+echo "[!] Once the web server is start, in a web browser, navigate to the following address: https://$fqdn/"
 # Uncomment the line below if you want to automatically start web server
 # python3 -m http.server $port &
 wait
